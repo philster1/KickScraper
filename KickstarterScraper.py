@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import sqlite3
 
-pages = 4 #HOW MANY PAGES OF PROJECTS DO YOU WANT TO SCRAPE? (20 PROJECTS PER PAGE)
+pages = 1 #HOW MANY PAGES OF PROJECTS DO YOU WANT TO SCRAPE? (20 PROJECTS PER PAGE)
 
 #setting up sqlite3
 conn = sqlite3.connect('kickstarter-project-links.db')  #creates sqlite database
@@ -49,21 +49,21 @@ projectTitle = ""
 backersNum = 0
 totalPledged = 0
 goal = 0
-timeLeft = 0
+projLength = 0
 endDate = ""
+hrsLeft = 0
 updatesNum = 0
 commentsNum = 0
-imgCount = 0
 descriptionTxt = ""
 
 #function for adding data to ProjectData.db
 def dataEntryData(projectTitle, backersNum, totalPledged, goal, timeLeft, endDate, updatesNum, commentsNum, imgCount, descriptionTxt):
-    c.execute("INSERT INTO ProjectData(ProjectTitle, TotalBackers, TotalPledged, Goal, TimeLeft, EndDate, TotalUpdates, TotalComments, ImageCount, Description) VALUES (?,?,?,?,?,?,?,?,?,?)",
-              (projectTitle, backersNum, totalPledged, goal, timeLeft, endDate, updatesNum, commentsNum, imgCount, descriptionTxt,))
+    c.execute("INSERT INTO ProjectData(ProjectTitle, TotalBackers, TotalPledged, Goal, ProjectLength, EndDate, HoursLeft, TotalUpdates, TotalComments, Description) VALUES (?,?,?,?,?,?,?,?,?,?)",
+              (projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt,))
     conn.commit() #absolutely need to do this to save data to table
             
 #Collecting all of the data from the individual projects
-def readData():
+def CollectData():
     for row in c.execute(sqlLinks):
         projectUrl = str(row).replace("(u'","").replace("',)", "")
         r = requests.get(projectUrl)
@@ -93,8 +93,8 @@ def readData():
                 for data in data.find_all('span', id=True):
                     print data['data-comments-count'] #number of comments 
             except: pass
-            #try: print data.find("div", {"class":"full-description"}).text.replace("\n","") #description text
-            #except: pass
+            try: print data.find("div", {"class":"full-description"}).text.replace("\n","") #description text
+            except: pass
         print str(row) + " Complete"
     print "DONE"
               
