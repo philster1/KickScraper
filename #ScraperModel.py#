@@ -29,9 +29,6 @@ def dataEntryLinks(link):
 
 #Collecting all of the links from the 'Discover' page
 def collectLinks():
-    #suppress warning
-    requests.packages.urllib3.disable_warnings()
-
     for i in range (1,pages + 1,1): 
         url = "https://www.kickstarter.com/discover/advanced?woe_id=0&sort=popularity&seed=2415707&page=" + str(i)
         r = requests.get(url)
@@ -68,13 +65,7 @@ def dataEntryData(projectTitle, backersNum, totalPledged, goal, projLength, endD
             
 #Collecting all of the data from the individual projects
 def collectData():
-    #suppress warning
-    requests.packages.urllib3.disable_warnings()
-
-    links = c.execute(sqlLinks)
-    rows = links.fetchall()
-
-    for row in rows:
+    for row in c.execute(sqlLinks):
         projectUrl = str(row).replace("(u'","").replace("',)", "")
         r = requests.get(projectUrl)
 
@@ -101,7 +92,7 @@ def collectData():
             except: pass
             try:
                 for data in data.find_all('span', id=True):
-                    commentsNum = data['data-comments-count'] #number of comments
+                    commentsNum = data['data-comments-count'] #number of comments 
             except: pass
             try: descriptionTxt = data.find("div", {"class":"full-description"}).text.replace("\n","") #description text
             except: pass
