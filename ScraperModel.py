@@ -63,12 +63,9 @@ descriptionTxt = ""
 
 #function for adding data to ProjectData.db
 def dataEntryData(projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt):
-    print "This is getting called."
-    # sqlcommand = "INSERT INTO `ProjectData`(ProjectTitle, TotalBackers, TotalPledged, Goal, ProjectLength, EndDate, HoursLeft, TotalUpdates, TotalComments, Description) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" % (projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt)
-    # print sqlcommand
-    #
-    # c.execute(sqlcommand)
-    # conn.commit() #absolutely need to do this to save data to table
+    c.execute("INSERT INTO `ProjectData`(ProjectTitle, TotalBackers, TotalPledged, Goal, ProjectLength, EndDate, HoursLeft, TotalUpdates, TotalComments, Description) VALUES (?,?,?,?,?,?,?,?,?,?)",
+    (projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt,))
+    conn.commit() #absolutely need to do this to save data to table
             
 #Collecting all of the data from the individual projects
 def collectData():
@@ -86,44 +83,39 @@ def collectData():
 
         raw_data = soup.find_all("section")
 
+        projLength = ""
+        endDate = ""
+        hrsLeft = ""
+        commentsNum = ""
+
         for data in raw_data:
-            print "POINTA"
             try: projectTitle = data.find("h2", {"class":"normal mb1"}).text #title
             except: pass
-            print "POINTB"
             try: backersNum = data.find("data", {"itemprop":"Project[backers_count]"}).text #total backers
             except: pass
-            print "POINTC"
             try: totalPledged = data.find("data", {"itemprop":"Project[pledged]"}).text #funding
             except: pass
-            print "POINTD"
             try: goal = data.find("span", {"class":"money usd no-code"}).text #goal
             except: pass
-            print "POINTE"
             try:
                 for span_data in data.find_all('span', id=True):
                     projLength = span_data['data-duration'] #project length
                     endDate = span_data['data-end_time'] #project end date
                     hrsLeft = span_data['data-hours-remaining'] #hours left for funding
             except: pass
-            print "POINTF"
             try: updatesNum = data.find("a", {"data-content":"updates"}).text.replace("Updates\n(","").replace(")\n","") #number of updates
             except: pass
-            print "POINTG"
             try:
                 for data in data.find_all('span', id=True):
                     commentsNum = data['data-comments-count'] #number of comments
             except: pass
-            print "POINTH"
             try: descriptionTxt = data.find("div", {"class":"full-description"}).text.replace("\n","") #description text
             except: pass
-            print "POINTI"
             try:
-                dataEntryData(projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, description)
+                dataEntryData(projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt)
             except:
                 e = sys.exc_info()[0]
                 print "ERROR: %s" % e
-            print "POINTJ"
         print str(row) + " Complete"
     print "DONE"
               
