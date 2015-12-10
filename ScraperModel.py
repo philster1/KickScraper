@@ -83,10 +83,16 @@ def collectData():
 
         raw_data = soup.find_all("section")
 
-        projLength = ""
+        projectTitle = ""
+        backersNum = 0
+        totalPledged = 0
+        goal = 0
+        projLength = 0
         endDate = ""
-        hrsLeft = ""
-        commentsNum = ""
+        hrsLeft = 0
+        updatesNum = 0
+        commentsNum = 0
+        descriptionTxt = ""
 
         for data in raw_data:
             try: projectTitle = data.find("h2", {"class":"normal mb1"}).text #title
@@ -111,11 +117,11 @@ def collectData():
             except: pass
             try: descriptionTxt = data.find("div", {"class":"full-description"}).text.replace("\n","") #description text
             except: pass
-            try:
-                dataEntryData(projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt)
-            except:
-                e = sys.exc_info()[0]
-                print "ERROR: %s" % e
+        try:
+            dataEntryData(projectTitle, backersNum, totalPledged, goal, projLength, endDate, hrsLeft, updatesNum, commentsNum, descriptionTxt)
+        except:
+            e = sys.exc_info()[0]
+            print "ERROR: %s" % e
         print str(row) + " Complete"
     print "DONE"
               
